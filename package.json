@@ -1,0 +1,28 @@
+{
+  "name": "group-assignment-6-ci-cd",
+  "version": "1.0.0",
+  "description": "A simple calculator application demonstrating CI/CD practices",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "jest --coverage",
+    "lint": "eslint src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fpauly/Group-Assignment-6-CI-CD.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/fpauly/Group-Assignment-6-CI-CD/issues"
+  },
+  "homepage": "https://github.com/fpauly/Group-Assignment-6-CI-CD#readme",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.2.0",
+    "jest": "^30.3.0"
+  }
+}
