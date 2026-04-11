@@ -2,150 +2,149 @@
 
 body {
   font-family: system-ui, sans-serif;
-  background: #0f1117;
-  color: #e8e8e8;
+  background: #faf5ff;
+  color: #1f2937;
   min-height: 100vh;
 }
 
 .app {
-  max-width: 640px;
+  max-width: 480px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: 2.5rem 1.5rem;
 }
 
 .hero {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
 }
 
 .hero h1 {
-  font-size: 2.5rem;
-  font-weight: 600;
-  letter-spacing: -0.5px;
-  margin-bottom: 0.5rem;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #7c3aed;
+  margin-bottom: 0.4rem;
 }
 
 .subtitle {
-  color: #888;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
+  color: #a78bfa;
 }
 
 h2 {
-  font-size: 1.1rem;
-  font-weight: 500;
-  margin-bottom: 1.25rem;
-  color: #ccc;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #6d28d9;
+  margin-bottom: 1rem;
 }
 
-.pipeline-section {
-  margin-bottom: 3rem;
-}
+.pipeline-section { margin-bottom: 2.5rem; }
 
 .pipeline {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .stage {
+  flex: 1;
+  min-width: 72px;
+  background: white;
+  border: 1.5px solid #ede9fe;
+  border-radius: 12px;
+  padding: 0.75rem 0.4rem;
+  text-align: center;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  background: #1a1d27;
-  border: 1px solid #2a2d3a;
-  border-radius: 12px;
-  padding: 1rem;
-  flex: 1;
-  min-width: 100px;
-  gap: 4px;
+  gap: 3px;
 }
 
-.stage-icon { font-size: 1.5rem; }
-.stage-name { font-size: 0.85rem; font-weight: 500; }
-.stage-desc { font-size: 0.75rem; color: #666; text-align: center; }
-
-.arrow { color: #444; font-size: 1.2rem; flex-shrink: 0; }
+.stage-icon { font-size: 1.3rem; }
+.stage-name { font-size: 0.75rem; font-weight: 600; color: #7c3aed; }
+.stage-desc { font-size: 0.65rem; color: #a78bfa; }
+.arrow { color: #c4b5fd; font-size: 1.1rem; flex-shrink: 0; }
 
 .game-section { margin-bottom: 2rem; }
 
-.game-intro {
-  font-size: 0.9rem;
-  color: #888;
-  margin-bottom: 1.5rem;
-}
-
-.game {
-  background: #1a1d27;
-  border: 1px solid #2a2d3a;
+.game-card {
+  background: white;
+  border: 1.5px solid #ede9fe;
   border-radius: 16px;
   padding: 1.5rem;
 }
 
-.scorebar {
+.scores {
   display: flex;
-  gap: 12px;
-  margin-bottom: 1.5rem;
-}
-
-.stat {
-  flex: 1;
-  background: #0f1117;
-  border-radius: 10px;
-  padding: 0.75rem;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.stat-label { font-size: 0.75rem; color: #666; }
-.stat-val { font-size: 1.5rem; font-weight: 600; }
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 8px;
   margin-bottom: 1.25rem;
 }
 
-.hole {
+.sc {
+  flex: 1;
+  background: #faf5ff;
+  border: 1.5px solid #ede9fe;
+  border-radius: 10px;
+  padding: 0.6rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sc-label { font-size: 0.7rem; color: #a78bfa; }
+.sc-val { font-size: 1.4rem; font-weight: 700; color: #7c3aed; }
+
+.status {
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #7c3aed;
+  margin-bottom: 1.25rem;
+  min-height: 22px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 1.25rem;
+}
+
+.cell {
   aspect-ratio: 1;
   border-radius: 12px;
-  background: #0f1117;
-  border: 1px solid #2a2d3a;
+  background: #faf5ff;
+  border: 1.5px solid #ede9fe;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   font-size: 2rem;
-  transition: transform 0.1s;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.1s;
   user-select: none;
 }
 
-.hole:active { transform: scale(0.92); }
-.hole.active { background: #1a2a1a; border-color: #3a5a3a; }
-.hole.whacked { background: #2a1a1a; border-color: #5a3a3a; }
-
-.msg {
-  text-align: center;
-  font-size: 0.9rem;
-  color: #888;
-  margin-bottom: 1rem;
-  min-height: 20px;
+.cell:hover:not(.taken) {
+  background: #f5f3ff;
+  transform: scale(1.04);
 }
+
+.cell.taken { cursor: default; }
+.cell.x { color: #7c3aed; }
+.cell.o { color: #f472b6; }
+.cell.win { background: #fdf4ff; border-color: #d946ef; }
 
 .btn {
   width: 100%;
-  padding: 0.7rem;
+  padding: 0.65rem;
   border-radius: 10px;
-  border: 1px solid #2a2d3a;
-  background: transparent;
-  color: #e8e8e8;
-  font-size: 0.95rem;
+  border: 1.5px solid #ede9fe;
+  background: #faf5ff;
+  color: #7c3aed;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
   transition: background 0.15s;
 }
 
-.btn:hover:not(:disabled) { background: #1a1d27; }
-.btn:disabled { opacity: 0.4; cursor: default; }
+.btn:hover { background: #f5f3ff; }

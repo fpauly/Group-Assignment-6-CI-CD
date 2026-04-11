@@ -1,99 +1,91 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 import './App.css'
 
-const HOLES = 9
-const GAME_DURATION = 30
+type Player = 'X' | 'O'
+type Cell = Player | null
 
-function WhackAMole() {
-  const [score, setScore] = useState(0)
-  const [best, setBest] = useState(0)
-  const [timeLeft, setTimeLeft] = useState(GAME_DURATION)
-  const [running, setRunning] = useState(false)
-  const [activeMole, setActiveMole] = useState<number | null>(null)
-  const [whacked, setWhacked] = useState<number | null>(null)
-  const [message, setMessage] = useState('press start to play')
+const WINS: number[][] = [
+  [0,1,2],[3,4,5],[6,7,8],
+  [0,3,6],[1,4,7],[2,5,8],
+  [0,4,8],[2,4,6]
+]
 
-  const getSpeed = useCallback((currentScore: number) => {
-    return Math.max(400, 1200 - currentScore * 25)
-  }, [])
-
-  useEffect(() => {
-    if (!running) return
-    const timer = setTimeout(() => {
-      setActiveMole(Math.floor(Math.random() * HOLES))
-    }, getSpeed(score))
-    return () => clearTimeout(timer)
-  }, [running, activeMole, score, getSpeed])
-
-  useEffect(() => {
-    if (!running) return
-    const countdown = setInterval(() => {
-      setTimeLeft(t => {
-        if (t <= 1) {
-          setRunning(false)
-          return 0
-        }
-        return t - 1
-      })
-    }, 1000)
-    return () => clearInterval(countdown)
-  }, [running])
-
-  useEffect(() => {
-    if (!running && timeLeft === 0) {
-      setActiveMole(null)
-      setScore(prev => {
-        setBest(b => Math.max(b, prev))
-        setMessage(
-          prev >= 15 ? `great job! scored ${prev}` :
-          prev >= 8 ? `nice! scored ${prev}` :
-          `scored ${prev} — try again!`
-        )
-        return prev
-      })
+function getWinner(board: Cell[]): Player | null {
+  for (const [a,b,c] of WINS) {
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      return board[a] as Player
     }
-  }, [running, timeLeft])
+  }
+  return null
+}
 
-  const startGame = () => {
-    setScore(0)
-    setTimeLeft(GAME_DURATION)
-    setActiveMole(null)
-    setWhacked(null)
-    setMessage('whack the hedgehog!')
-    setRunning(true)
+function getWinLine(board: Cell[]): number[] | null {
+  for (const line of WINS) {
+    const [a,b,c] = line
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) return line
+  }
+  return null
+}
+
+function TicTacToe() {
+  const [board, setBoard] = useState<Cell[]>(Array(9).fill(null))
+  const [xTurn, setXTurn] = useState(true)
+  const [scores, setScores] = useState({ X: 0, O: 0, draw: 0 })
+
+  const winner = getWinner(board)
+  const winLine = getWinLine(board)
+  const isDraw = !winner && board.every(Boolean)
+
+  const move = (i: number) => {
+    if (winner || isDraw || board[i]) return
+    const next = [...board]
+    next[i] = xTurn ? 'X' : 'O'
+    const nextWinner = getWinner(next)
+    const nextDraw = !nextWinner && next.every(Boolean)
+    if (nextWinner) {
+      setScores(s => ({ ...s, [nextWinner]: s[nextWinner] + 1 }))
+    } else if (nextDraw) {
+      setScores(s => ({ ...s, draw: s.draw + 1 }))
+    }
+    setBoard(next)
+    setXTurn(!xTurn)
   }
 
-  const whack = (i: number) => {
-    if (!running || i !== activeMole) return
-    setWhacked(i)
-    setActiveMole(null)
-    setScore(s => s + 1)
-    setTimeout(() => setWhacked(null), 300)
+  const restart = () => {
+    setBoard(Array(9).fill(null))
+    setXTurn(true)
   }
+
+  const status = winner
+    ? `${winner === 'X' ? '✖' : '〇'} wins!`
+    : isDraw
+    ? "it's a draw!"
+    : xTurn ? '✖ your turn' : '〇 your turn'
 
   return (
-    <div className="game">
-      <div className="scorebar">
-        <div className="stat"><span className="stat-label">score</span><span className="stat-val">{score}</span></div>
-        <div className="stat"><span className="stat-label">time</span><span className="stat-val">{timeLeft}</span></div>
-        <div className="stat"><span className="stat-label">best</span><span className="stat-val">{best}</span></div>
+    <div className="game-card">
+      <div className="scores">
+        <div className="sc"><span className="sc-label">✖ wins</span><span className="sc-val">{scores.X}</span></div>
+        <div className="sc"><span className="sc-label">draws</span><span className="sc-val">{scores.draw}</span></div>
+        <div className="sc"><span className="sc-label">〇 wins</span><span className="sc-val">{scores.O}</span></div>
       </div>
-      <div className="grid">
-        {Array.from({ length: HOLES }, (_, i) => (
+      <div className="status">{status}</div>
+      <div className="board">
+        {board.map((cell, i) => (
           <div
             key={i}
-            className={`hole ${activeMole === i ? 'active' : ''} ${whacked === i ? 'whacked' : ''}`}
-            onClick={() => whack(i)}
+            className={[
+              'cell',
+              cell ? `taken ${cell.toLowerCase()}` : '',
+              winLine?.includes(i) ? 'win' : ''
+            ].join(' ')}
+            onClick={() => move(i)}
           >
-            {activeMole === i && <span className="mole">🦔</span>}
-            {whacked === i && <span className="mole">💥</span>}
+            {cell === 'X' ? '✖' : cell === 'O' ? '〇' : ''}
           </div>
         ))}
       </div>
-      <p className="msg">{message}</p>
-      <button className="btn" onClick={startGame} disabled={running}>
-        {running ? 'playing...' : timeLeft === 0 ? 'play again' : 'start'}
-      </button>
+      <button className="btn" onClick={restart}>new game</button>
     </div>
   )
 }
@@ -113,33 +105,32 @@ function App() {
             <div className="stage">
               <span className="stage-icon">🔍</span>
               <span className="stage-name">Lint</span>
-              <span className="stage-desc">ESLint code quality</span>
+              <span className="stage-desc">ESLint</span>
             </div>
             <div className="arrow">→</div>
             <div className="stage">
               <span className="stage-icon">🔷</span>
               <span className="stage-name">Type check</span>
-              <span className="stage-desc">TypeScript validation</span>
+              <span className="stage-desc">TypeScript</span>
             </div>
             <div className="arrow">→</div>
             <div className="stage">
               <span className="stage-icon">🏗️</span>
               <span className="stage-name">Build</span>
-              <span className="stage-desc">Vite production build</span>
+              <span className="stage-desc">Vite</span>
             </div>
             <div className="arrow">→</div>
             <div className="stage">
               <span className="stage-icon">🚀</span>
               <span className="stage-name">Deploy</span>
-              <span className="stage-desc">GitHub Pages</span>
+              <span className="stage-desc">GH Pages</span>
             </div>
           </div>
         </section>
 
         <section className="game-section">
-          <h2>Whack-a-mole</h2>
-          <p className="game-intro">Built with React + TypeScript. Speed increases as your score goes up.</p>
-          <WhackAMole />
+          <h2>tic-tac-toe</h2>
+          <TicTacToe />
         </section>
       </main>
     </div>
