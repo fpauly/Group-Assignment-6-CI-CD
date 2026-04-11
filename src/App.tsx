@@ -56,6 +56,10 @@ function TicTacToe() {
     setXTurn(true)
   }
 
+  const resetScores = () => {
+    setScores({ X:0, O:0, draw:0 })
+  }
+
   const status = winner
     ? `${winner === 'X' ? '✖' : '〇'} wins!`
     : isDraw
@@ -69,6 +73,9 @@ function TicTacToe() {
         <div className="sc"><span className="sc-label">draws</span><span className="sc-val">{scores.draw}</span></div>
         <div className="sc"><span className="sc-label">〇 wins</span><span className="sc-val">{scores.O}</span></div>
       </div>
+      {!winner && !isDraw && (
+        <div className = "status">Current turn: {xTurn ? '✖ (X)' : '〇 (O)'}</div>
+      )}
       <div className="status">{status}</div>
       <div className="board">
         {board.map((cell, i) => (
@@ -86,6 +93,10 @@ function TicTacToe() {
         ))}
       </div>
       <button className="btn" onClick={restart}>new game</button>
+
+      <button className="btn" onClick={resetScores}>
+        reset scores
+      </button>
     </div>
   )
 }
